@@ -1,4 +1,0 @@
-FROM nginx
-WORKDIR /etc/nginx/sites-available
-COPY ./crud.conf .
-RUN apt update && apt install -y wait-for-it
