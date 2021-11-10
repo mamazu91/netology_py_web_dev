@@ -1,0 +1,18 @@
+Ни одна статья так и не смогла объяснить, как заранить этот сраный gunicorn.
+
+В итоге все оказалось просто:
+1. Устанавливаем:
+pip3 install gunicorn
+
+2. Делаем cd в папку с проектом:
+cd ./stocks_products
+
+3. Запускаем:
+gunicorn stocks_products.wsgi:application -b 0.0.0.0:8000*
+
+*
+- stocks_products.wsgi - это не файл, а название проекта + .wsgi
+- application берется из переменной в ./stocks_products/stocks_products/wsgi.py, по-дефолту она выглядит так:
+crud = get_wsgi_application()
+ 
+На почитать: https://docs.gunicorn.org/en/stable/run.html, https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html
