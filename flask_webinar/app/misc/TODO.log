@@ -1,0 +1,65 @@
+TODO:
+1. Why this alphabetical (views.py)?
+    def get(self, advertisement_id):
+        advertisement = Advertisements.query.get(advertisement_id)
+
+Although (app.py):
+class Advertisements(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False, unique=True)
+    description = db.Column(db.String(200), nullable=False)
+    created_on = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow)
+    publisher_id = db.Column(db.Integer, db.ForeignKey('publishers.id'), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'created_on': self.created_on,
+            'publisher_id': self.publisher_id
+        }
+
+2. Add migrations
+
+
+3. Learn about @classmethod. Why this works without instantiation:
+class AdvertisementView(MethodView):
+
+    def get(self, advertisement_id):
+        adv = Advertisements.find_by_id(advertisement_id)
+
+When @classmethod is there:
+    @classmethod
+    def find_by_id(cls, advertisement_id):
+        advertisement = Advertisements.query.get(advertisement_id)
+        if advertisement:
+            return advertisement
+
+        raise NotFound
+
+And does not work without?
+
+
+4. Enable SQL queries and check why this (models.py):
+        publisher = Publishers.query.filter_by(id=advertisement.publisher_id).get_or_404()
+
+
+In:
+class AdvertisementView(MethodView):
+
+    def get(self, advertisement_id):
+        advertisement = Advertisements.query.get_or_404(advertisement_id,
+                                                        description=f'Object with id {advertisement_id} not found')
+
+        publisher = Publishers.query.filter_by(id=advertisement.publisher_id).get_or_404()
+
+        return jsonify(advertisement.to_dict(publisher=publisher.to_dict()))
+
+Fails with 'TypeError: get_or_404() missing 1 required positional argument: 'ident'', but this one does not:
+        publisher = Publishers.query.filter_by(id=advertisement.publisher_id).first_or_404()
+
+
+
+ To read:
+ - https://pythonise.com/series/learning-flask/flask-api-methodview

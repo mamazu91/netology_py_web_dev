@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_DB=netology_flask
+      - POSTGRES_PASSWORD=postgres
+  backend:
+    build:
+      context: .
+      dockerfile: backend_dockerfile
+    command: bash -c "
+        wait-for-it db:5432 -- python3 fixtures.py
+        && python3 run.py"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
