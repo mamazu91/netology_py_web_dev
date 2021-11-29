@@ -1,0 +1,3 @@
+aiosmtplib
+aiosqlite
+asyncio
